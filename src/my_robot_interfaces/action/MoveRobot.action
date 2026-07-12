@@ -1,0 +1,5 @@
+int32 distance
+---
+bool success
+---
+int32 current_distance
