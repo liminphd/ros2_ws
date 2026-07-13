@@ -22,13 +22,14 @@ setup(
             'pytest',
         ],
     },
-    entry_points={
-        'console_scripts': [
-            'publisher = my_first_pkg.publisher:main',
-            'subscriber = my_first_pkg.subscriber:main',
-            'add_two_ints_server = my_first_pkg.add_two_ints_server:main',
-            'move_robot_action_server = my_first_pkg.move_robot_action_server:main',
-            'move_robot_action_client = my_first_pkg.move_robot_action_client:main',
-        ],
-    },
+   entry_points={
+    'console_scripts': [
+        'publisher = my_first_pkg.publisher:main',
+        'subscriber = my_first_pkg.subscriber:main',
+        'add_two_ints_server = my_first_pkg.add_two_ints_server:main',
+        'add_two_ints_client = my_first_pkg.add_two_ints_client:main',
+        'move_robot_action_server = my_first_pkg.move_robot_action_server:main',
+        'move_robot_action_client = my_first_pkg.move_robot_action_client:main',
+    ],
+},
 )

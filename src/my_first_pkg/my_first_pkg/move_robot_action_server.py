@@ -60,22 +60,22 @@ class MoveRobotActionServer(Node):
 
 
 def main(args=None):
-	rclpy.init(args=args)
+    rclpy.init(args=args)
 
-	node = MoveRobotActionServer()
+    node = MoveRobotActionServer()
+    executor = MultiThreadedExecutor(num_threads=2)
+    executor.add_node(node)
 
-	executor = MultiThreadedExecutor(num_threads=2)
-	executor.add_node(node)
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        executor.remove_node(node)
+        node.destroy_node()
+        executor.shutdown()
 
-	try:
-		executor.spin()
-	except KeyboardInterrupt:
-		pass
-	finally:
-		executor.shutdown()
-		node.destroy_node()
-		rclpy.shutdown()
 
 
 if __name__ == '__main__':
-	main()
+    main()
