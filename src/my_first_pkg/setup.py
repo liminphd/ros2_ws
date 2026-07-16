@@ -43,6 +43,7 @@ setup(
             'add_two_ints_client = my_first_pkg.add_two_ints_client:main',
             'move_robot_action_server = my_first_pkg.move_robot_action_server:main',
             'move_robot_action_client = my_first_pkg.move_robot_action_client:main',
+            'parameter_demo = my_first_pkg.parameter_demo:main',
         ],
     },
 )
