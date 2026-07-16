@@ -1,36 +1,41 @@
+import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
+    config_file = os.path.join(
+        get_package_share_directory('my_first_pkg'),
+        'config',
+        'robot_params.yaml',
+    )
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'publisher_name',
-            default_value='robot_publisher'
-        ),
-
-        DeclareLaunchArgument(
-            'subscriber_name',
-            default_value='robot_subscriber'
-        ),
-
         Node(
             package='my_first_pkg',
             executable='publisher',
-            name=LaunchConfiguration('publisher_name')
+            name='robot_publisher',
+            output='screen',
         ),
 
         Node(
             package='my_first_pkg',
             executable='subscriber',
-            name=LaunchConfiguration('subscriber_name')
+            name='robot_subscriber',
+            output='screen',
         ),
 
         Node(
             package='my_first_pkg',
             executable='move_robot_action_server',
-            name='action_server'
+            name='action_server',
+            output='screen',
+        ),
+
+        Node(
+            package='my_first_pkg',
+            executable='parameter_demo',
+            name='parameter_demo',
+            parameters=[config_file],
+            output='screen',
         ),
     ])
