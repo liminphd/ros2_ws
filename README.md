@@ -1,45 +1,94 @@
 # Autonomous Agricultural Robot Framework
 
-A modular ROS2-based software framework for autonomous agricultural robots.
+A platform-independent and modular ROS2 framework for autonomous agricultural robots.
 
-This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04**. The objective is to build a platform-independent and modular software architecture for autonomous agricultural robots with multi-sensor integration, localization, mapping and navigation capabilities.
-
----
-
-# Project Goals
-
-The main objectives of this project are:
-
-- Build a modular ROS2 software framework
-- Develop a platform-independent robot architecture
-- Integrate multiple sensors
-- Support autonomous navigation
-- Provide a reusable framework for agricultural robotics research
+This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04** at **Technion – Israel Institute of Technology**. The objective is to build a reusable software framework for autonomous agricultural robots with multi-sensor integration, localization, mapping and navigation capabilities.
 
 ---
 
-# Hardware Platform
+# Current Status
 
-## Current Sensors
+## Completed
 
-- COIN-D6 LiDAR
-- Gemini335 Stereo Camera
+- ✅ ROS2 Jazzy development environment
+- ✅ Robot Description (URDF/Xacro)
+- ✅ Modular Bringup architecture
+- ✅ CSPC COIN-D6 LiDAR integration
+- ✅ Orbbec Gemini335 stereo camera integration
+- ✅ TF tree verification
+- ✅ robot_localization EKF framework
+- ✅ RViz visualization
 
-## Planned Sensors
+## In Progress
 
-- Dual Antenna GPS
-- IMU
+- 🔄 Dual-sensor validation (LiDAR + Camera)
+- 🔄 IMU integration
 
-## Robot Platforms
+## Planned
 
-Current
+- Dual Antenna GPS integration
+- Multi-sensor fusion
+- SLAM Toolbox
+- Navigation2
+- Autonomous navigation
+- Platform-independent deployment
 
-- Custom ROS2 robot platform
+---
 
-Future
+# Project Milestones
 
-- AMIGA Farm-ng
-- AgileX Scout
+| Stage | Status |
+|--------|--------|
+| ROS2 Development Environment | ✅ |
+| Robot Description | ✅ |
+| Modular Bringup | ✅ |
+| Sensor Integration | ✅ |
+| Sensor Fusion | 🔄 |
+| Mapping (SLAM) | ⏳ |
+| Navigation2 | ⏳ |
+| Autonomous Navigation | ⏳ |
+
+---
+
+# Software Architecture
+
+Current framework:
+
+```text
+                    bringup.launch.py
+                            │
+      ┌─────────────┬──────────────┬──────────────┐
+      │             │              │              │
+description      sensors      localization   visualization
+      │             │              │              │
+ Robot Model   LiDAR / Camera      EKF          RViz
+```
+
+Target framework:
+
+```text
+                  Autonomous Agricultural Robot Framework
+                                  │
+        ┌─────────────────────────┼─────────────────────────┐
+        │                         │                         │
+ Robot Description          Sensor Layer            Robot Bringup
+        │                         │                         │
+        │          ┌──────────────┼──────────────┐          │
+        │          │              │              │          │
+     LiDAR     Stereo Camera      IMU      Dual GPS         │
+        │          │              │              │          │
+        └──────────┴──────────────┴──────────────┘
+                               │
+                 robot_localization (Sensor Fusion)
+                               │
+                    SLAM / Localization
+                               │
+                         Navigation2
+                               │
+                        Motion Control
+                               │
+                Autonomous Agricultural Applications
+```
 
 ---
 
@@ -49,114 +98,53 @@ Future
 ros2_ws
 │
 ├── docs
-│   ├── architecture
-│   ├── images
-│   └── reports
+│   └── architecture
 │
 ├── src
 │   ├── cspc_lidar_sdk_ros2
 │   ├── my_robot_description
 │   ├── my_robot_bringup
 │   ├── my_robot_interfaces
-│   └── my_first_pkg
+│   ├── my_first_pkg
+│   └── robot_sensors
 │
 ├── build
 ├── install
 └── log
 ```
 
-### Package Description
+---
+
+# Package Overview
 
 | Package | Description |
 |----------|-------------|
 | my_robot_description | Robot URDF/Xacro model |
-| my_robot_bringup | Robot startup and launch system |
-| cspc_lidar_sdk_ros2 | COIN-D6 LiDAR ROS2 driver |
+| my_robot_bringup | Modular bringup and launch system |
+| robot_sensors | Sensor configuration and sensor launch management |
+| cspc_lidar_sdk_ros2 | CSPC COIN-D6 LiDAR ROS2 driver |
 | my_robot_interfaces | Custom ROS2 interfaces |
-| my_first_pkg | ROS2 communication examples for learning and testing |
+| my_first_pkg | ROS2 learning and testing examples |
 
 ---
 
-# Current Progress
+# Hardware Platform
 
-## Completed
+## Current Sensors
 
-- Ubuntu 24.04 development environment
-- ROS2 Jazzy installation
-- VS Code development environment
-- Git & GitHub configuration
-- ROS2 Publisher / Subscriber
-- ROS2 Service
-- ROS2 Action
-- ROS2 Parameters
-- ROS2 Launch
-- Robot URDF/Xacro model
-- Robot Bringup system
-- COIN-D6 LiDAR integration
-- Gemini335 Stereo Camera integration
-- Robot TF configuration
-- RViz visualization
+- CSPC COIN-D6 LiDAR
+- Orbbec Gemini335 Stereo Camera
 
-## In Progress
+## Planned Sensors
 
-- Framework refactoring
-- Project documentation
-- Software architecture design
+- IMU
+- Dual Antenna GPS
 
-## Planned
+## Target Robot Platforms
 
-- IMU integration
-- Dual Antenna GPS integration
-- Robot localization
-- Sensor fusion
-- SLAM
-- Navigation2
-- Autonomous navigation
-- Agricultural robot applications
-
----
-
-# Software Architecture
-
-Current framework:
-
-```text
-Robot Description
-        │
-Robot Bringup
-        │
-LiDAR Driver
-        │
-Stereo Camera
-        │
-RViz
-```
-
-Target framework:
-
-```text
-                    Autonomous Agricultural Robot Framework
-                                   │
-        ┌──────────────────────────┼──────────────────────────┐
-        │                          │                          │
- Robot Description           Sensor Layer              Robot Bringup
-        │                          │                          │
-        │          ┌───────────────┼────────────────┐         │
-        │          │               │                │         │
-     LiDAR      Stereo Camera     IMU         Dual GPS        │
-        │          │               │                │         │
-        └──────────┴───────────────┴────────────────┘
-                               │
-                      Sensor Fusion (robot_localization)
-                               │
-                         SLAM / Localization
-                               │
-                           Navigation2
-                               │
-                          Motion Control
-                               │
-                       Agricultural Applications
-```
+- Custom ROS2 Robot
+- farm-ng AMIGA
+- AgileX Scout
 
 ---
 
@@ -189,25 +177,47 @@ source install/setup.bash
 
 # Launch
 
+Launch the complete robot system:
+
 ```bash
 ros2 launch my_robot_bringup bringup.launch.py
 ```
 
+Launch with optional sensors:
+
+```bash
+ros2 launch my_robot_bringup bringup.launch.py \
+    use_lidar:=true \
+    use_camera:=true
+```
+
 ---
 
-# Future Work
+# Documentation
 
-The future development will focus on:
+Project documentation is located in:
 
-- Modular sensor management
-- GPS integration
+```text
+docs/architecture/
+```
+
+Including:
+
+- System Overview
+- Package Design
+- Sensor Architecture
+
+---
+
+# Future Roadmap
+
 - IMU integration
-- Multi-sensor fusion
-- Robot localization
-- SLAM
+- Dual GPS integration
+- EKF sensor fusion
+- SLAM Toolbox
 - Navigation2
-- Platform-independent robot framework
-- Autonomous agricultural robot applications
+- Platform-independent deployment
+- Autonomous agricultural applications
 
 ---
 
@@ -220,3 +230,9 @@ Faculty of Civil and Environmental Engineering
 Technion – Israel Institute of Technology
 
 Supervisor: **Prof. Raphael Linker**
+
+---
+
+# License
+
+This project is intended for research and educational purposes.
