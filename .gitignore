@@ -4,4 +4,6 @@ log/
 
 __pycache__/
 *.pyc
-bag_data/src/sbg_ros2_driver/
+
+bag_data/
+src/sbg_ros2_driver/
