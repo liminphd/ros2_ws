@@ -20,6 +20,17 @@ def generate_launch_description():
         )
     )
 
+    sbg_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                package_share,
+                "launch",
+                "sbg.launch.py",
+            )
+        )
+    )
+
     return LaunchDescription([
         velodyne_launch,
+        sbg_launch,
     ])

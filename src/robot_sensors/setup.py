@@ -22,11 +22,19 @@ setup(
             ['package.xml'],
         ),
         (
-            os.path.join('share', package_name, 'launch'),
+            os.path.join(
+                'share',
+                package_name,
+                'launch',
+            ),
             glob('launch/*.launch.py'),
         ),
         (
-            os.path.join('share', package_name, 'config'),
+            os.path.join(
+                'share',
+                package_name,
+                'config',
+            ),
             glob('config/*.yaml'),
         ),
         (
@@ -37,6 +45,15 @@ setup(
                 'velodyne',
             ),
             glob('config/velodyne/*.yaml'),
+        ),
+        (
+            os.path.join(
+                'share',
+                package_name,
+                'config',
+                'sbg',
+            ),
+            glob('config/sbg/*.yaml'),
         ),
     ],
 
