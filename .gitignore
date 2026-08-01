@@ -1,9 +1,19 @@
+# ROS2
 build/
 install/
 log/
 
+# Python
 __pycache__/
 *.pyc
 
+# rosbag
 bag_data/
+
+# TF exports
+frames_*.gv
+frames_*.pdf
+frames_*.png
+
+# External packages
 src/sbg_ros2_driver/
