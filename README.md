@@ -1,8 +1,37 @@
 # Autonomous Agricultural Robot Framework
 
-A platform-independent and modular ROS2 framework for autonomous agricultural robots.
+A modular, platform-independent ROS2 framework for autonomous agricultural robots.
 
-This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04** at **Technion – Israel Institute of Technology**. The objective is to build a reusable software framework for autonomous agricultural robots with multi-sensor integration, localization, mapping and navigation capabilities.
+This project is being developed at the **Technion – Israel Institute of Technology** using **ROS2 Jazzy (Ubuntu 24.04)**.
+
+The objective is to build a reusable perception and navigation framework capable of integrating multiple sensors, performing localization and mapping, and supporting autonomous agricultural applications.
+
+---
+
+# Project Overview
+
+Current software architecture integrates multiple sensing modules into a unified ROS2 framework.
+
+Current hardware platform:
+
+- CSPC COIN-D6 LiDAR
+- Dual Luxonis OAK-D-W PoE Cameras
+- SBG Ellipse IMU
+- Dual-Antenna GNSS (under integration)
+
+Current software stack:
+
+- ROS2 Jazzy
+- robot_localization
+- RViz2
+- Modular Launch System
+
+Future software stack:
+
+- SLAM Toolbox
+- Navigation2
+- Autonomous Navigation
+- Jetson-based Manipulator Integration
 
 ---
 
@@ -11,26 +40,30 @@ This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04** at **Technion
 ## Completed
 
 - ✅ ROS2 Jazzy development environment
+- ✅ Modular workspace architecture
 - ✅ Robot Description (URDF/Xacro)
-- ✅ Modular Bringup architecture
+- ✅ Modular Bringup framework
 - ✅ CSPC COIN-D6 LiDAR integration
-- ✅ Orbbec Gemini335 stereo camera integration
+- ✅ SBG Ellipse IMU integration
+- ✅ Dual OAK-D-W PoE camera integration
+- ✅ Dual-camera ROS2 launch framework
 - ✅ TF tree verification
-- ✅ robot_localization EKF framework
 - ✅ RViz visualization
 
 ## In Progress
 
-- 🔄 Dual-sensor validation (LiDAR + Camera)
-- 🔄 IMU integration
+- 🔄 Dual Antenna GNSS integration
+- 🔄 Unified sensor launch
+- 🔄 robot_localization configuration
 
 ## Planned
 
-- Dual Antenna GPS integration
-- Multi-sensor fusion
+- Sensor fusion
 - SLAM Toolbox
 - Navigation2
 - Autonomous navigation
+- Jetson integration
+- Manipulator integration
 - Platform-independent deployment
 
 ---
@@ -41,10 +74,12 @@ This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04** at **Technion
 |--------|--------|
 | ROS2 Development Environment | ✅ |
 | Robot Description | ✅ |
-| Modular Bringup | ✅ |
-| Sensor Integration | ✅ |
-| Sensor Fusion | 🔄 |
-| Mapping (SLAM) | ⏳ |
+| LiDAR Integration | ✅ |
+| IMU Integration | ✅ |
+| Dual Camera Integration | ✅ |
+| GNSS Integration | 🔄 |
+| Sensor Fusion (EKF) | 🔄 |
+| SLAM | ⏳ |
 | Navigation2 | ⏳ |
 | Autonomous Navigation | ⏳ |
 
@@ -52,42 +87,42 @@ This project is developed using **ROS2 Jazzy** on **Ubuntu 24.04** at **Technion
 
 # Software Architecture
 
-Current framework:
+Current architecture
 
 ```text
-                    bringup.launch.py
-                            │
-      ┌─────────────┬──────────────┬──────────────┐
-      │             │              │              │
-description      sensors      localization   visualization
-      │             │              │              │
- Robot Model   LiDAR / Camera      EKF          RViz
+                     bringup.launch.py
+                              │
+      ┌──────────────┬──────────────┬──────────────┐
+      │              │              │              │
+ description      sensors     localization   visualization
+      │              │              │              │
+ Robot Model   LiDAR / OAK / SBG    EKF          RViz
 ```
 
-Target framework:
+Target architecture
 
 ```text
-                  Autonomous Agricultural Robot Framework
-                                  │
-        ┌─────────────────────────┼─────────────────────────┐
-        │                         │                         │
- Robot Description          Sensor Layer            Robot Bringup
-        │                         │                         │
-        │          ┌──────────────┼──────────────┐          │
-        │          │              │              │          │
-     LiDAR     Stereo Camera      IMU      Dual GPS         │
-        │          │              │              │          │
-        └──────────┴──────────────┴──────────────┘
+                 Autonomous Agricultural Robot Framework
+                                   │
+        ┌──────────────────────────┼──────────────────────────┐
+        │                          │                          │
+ Robot Description           Sensor Layer             Robot Bringup
+        │                          │                          │
+        │          ┌───────────────┼────────────────┐         │
+        │          │               │                │         │
+     LiDAR     Dual OAK Cameras    IMU        Dual GNSS       │
+        │          │               │                │         │
+        └──────────┴───────────────┴────────────────┘
                                │
                  robot_localization (Sensor Fusion)
                                │
-                    SLAM / Localization
+                     Mapping / Localization
                                │
                          Navigation2
                                │
-                        Motion Control
+                       Motion Controller
                                │
-                Autonomous Agricultural Applications
+             Autonomous Agricultural Applications
 ```
 
 ---
@@ -98,15 +133,26 @@ Target framework:
 ros2_ws
 │
 ├── docs
-│   └── architecture
 │
 ├── src
 │   ├── cspc_lidar_sdk_ros2
-│   ├── my_robot_description
 │   ├── my_robot_bringup
+│   ├── my_robot_description
 │   ├── my_robot_interfaces
-│   ├── my_first_pkg
-│   └── robot_sensors
+│   ├── robot_sensors
+│   │
+│   ├── config
+│   │   ├── velodyne
+│   │   ├── sbg
+│   │   └── oak
+│   │
+│   └── launch
+│       ├── velodyne.launch.py
+│       ├── sbg.launch.py
+│       ├── oak_left.launch.py
+│       ├── oak_right.launch.py
+│       ├── oak_cameras.launch.py
+│       └── sensors.launch.py
 │
 ├── build
 ├── install
@@ -120,11 +166,11 @@ ros2_ws
 | Package | Description |
 |----------|-------------|
 | my_robot_description | Robot URDF/Xacro model |
-| my_robot_bringup | Modular bringup and launch system |
-| robot_sensors | Sensor configuration and sensor launch management |
-| cspc_lidar_sdk_ros2 | CSPC COIN-D6 LiDAR ROS2 driver |
+| my_robot_bringup | Robot bringup and launch system |
+| robot_sensors | Sensor configuration and launch management |
+| cspc_lidar_sdk_ros2 | CSPC LiDAR ROS2 driver |
 | my_robot_interfaces | Custom ROS2 interfaces |
-| my_first_pkg | ROS2 learning and testing examples |
+| my_first_pkg | ROS2 experiments and testing |
 
 ---
 
@@ -133,18 +179,18 @@ ros2_ws
 ## Current Sensors
 
 - CSPC COIN-D6 LiDAR
-- Orbbec Gemini335 Stereo Camera
+- Dual Luxonis OAK-D-W PoE Cameras
+- SBG Ellipse IMU
 
-## Planned Sensors
+## Under Integration
 
-- IMU
-- Dual Antenna GPS
+- Dual Antenna GNSS
 
-## Target Robot Platforms
+## Future Hardware
 
-- Custom ROS2 Robot
-- farm-ng AMIGA
-- AgileX Scout
+- NVIDIA Jetson
+- Robotic Manipulator
+- Autonomous Agricultural Robot Platform
 
 ---
 
@@ -154,7 +200,7 @@ ros2_ws
 |------|---------|
 | Operating System | Ubuntu 24.04 |
 | ROS | ROS2 Jazzy |
-| Language | Python 3.12 / C++ |
+| Programming Language | Python 3.12 / C++ |
 | IDE | Visual Studio Code |
 
 ---
@@ -177,47 +223,60 @@ source install/setup.bash
 
 # Launch
 
-Launch the complete robot system:
+Launch LiDAR
+
+```bash
+ros2 launch robot_sensors velodyne.launch.py
+```
+
+Launch IMU
+
+```bash
+ros2 launch robot_sensors sbg.launch.py
+```
+
+Launch Dual OAK Cameras
+
+```bash
+ros2 launch robot_sensors oak_cameras.launch.py
+```
+
+Launch Complete Robot
 
 ```bash
 ros2 launch my_robot_bringup bringup.launch.py
-```
-
-Launch with optional sensors:
-
-```bash
-ros2 launch my_robot_bringup bringup.launch.py \
-    use_lidar:=true \
-    use_camera:=true
 ```
 
 ---
 
 # Documentation
 
-Project documentation is located in:
+Project documentation is located in
 
 ```text
-docs/architecture/
+docs/
 ```
 
-Including:
+Documentation includes
 
-- System Overview
-- Package Design
+- System Architecture
 - Sensor Architecture
+- Launch Architecture
+- Robot Description
+- Package Design
 
 ---
 
 # Future Roadmap
 
-- IMU integration
-- Dual GPS integration
-- EKF sensor fusion
+- Complete GNSS integration
+- robot_localization EKF configuration
+- Multi-sensor synchronization
 - SLAM Toolbox
 - Navigation2
-- Platform-independent deployment
-- Autonomous agricultural applications
+- Jetson deployment
+- Manipulator integration
+- Autonomous agricultural navigation
 
 ---
 
@@ -235,4 +294,4 @@ Supervisor: **Prof. Raphael Linker**
 
 # License
 
-This project is intended for research and educational purposes.
+This repository is intended for research and educational purposes.
