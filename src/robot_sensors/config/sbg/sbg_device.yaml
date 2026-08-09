@@ -247,19 +247,19 @@
 
       # Ros standard output:
       # Note: If true publish ROS standard messages.
-      ros_standard: false
+      ros_standard: true
 
       # Frame convention:
       # Note: If true messages are expressed in the ENU convention.
       #
       # true : ENU convention (X east, Y north, Z up)
       # false (default): NED convention (X north, Y east, Z down)
-      use_enu: false
+      use_enu: true
 
       # Frame ID:
       # Note: If the frame convention is NED so the default frame ID is (imu_link_ned)
       #       else if the convention is ENU so the default frame ID is (imu_link)
-      frame_id: "imu_link_ned"
+      frame_id: "imu_link"
 
       # GPS frame ID:
       # Note: Frame of the GNSS antenna. GPS position, velocity and true heading
@@ -309,7 +309,7 @@
       # Air data
       log_air_data: 0
       # Short IMU data
-      log_imu_short: 8
+      log_imu_short: 0
 
     rtcm:
       # Should ros driver subscribe to RTCM topic
