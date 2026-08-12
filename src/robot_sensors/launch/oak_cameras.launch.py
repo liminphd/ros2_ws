@@ -14,7 +14,7 @@ def generate_launch_description():
             os.path.join(
                 robot_sensors_share,
                 'launch',
-                'oak_left.launch.py',
+                'oak_front.launch.py',
             )
         )
     )
@@ -24,7 +24,7 @@ def generate_launch_description():
             os.path.join(
                 robot_sensors_share,
                 'launch',
-                'oak_right.launch.py',
+                'oak_rear.launch.py',
             )
         )
     )

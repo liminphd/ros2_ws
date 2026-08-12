@@ -13,7 +13,7 @@ def generate_launch_description():
         robot_sensors_share,
         'config',
         'oak',
-        'left_camera.yaml',
+        'front_camera.yaml',
     )
 
     oak0_launch = IncludeLaunchDescription(
