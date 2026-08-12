@@ -56,7 +56,7 @@
       # 3 MARINE          Used in marine and underwater applications
       # 4 AIRPLANE        For fixed wings aircraft
       # 5 HELICOPTER      For rotary wing aircraft
-      motionProfile: 1
+      motionProfile: 2
     
     # IMU_ALIGNMENT_LEVER_ARM
     imuAlignementLeverArm:
@@ -156,7 +156,7 @@
       # 104 Used on Ellipse-E to setup a connection to ublox in read only mode.
       # 106 Used on Ellipse-E to setup a connection to Novatel receiver in read only mode.
       # 107 Used on Ellipse-D by default
-      gnss_model_id: 101
+      gnss_model_id: 107
     
       #GNSS primary antenna lever arm in IMU X axis (m)
       primaryLeverArmX: 0.0
@@ -168,7 +168,7 @@
       primaryLeverPrecise: true
     
       #GNSS secondary antenna lever arm in IMU X axis (m)
-      secondaryLeverArmX: 0.0
+      secondaryLeverArmX: -1.28
       #GNSS secondary antenna lever arm in IMU Y axis (m)
       secondaryLeverArmY: 0.0
       #GNSS secondary antenna lever arm in IMU Z axis (m)
@@ -179,7 +179,7 @@
       # 2 [Reserved] The GNSS dual antenna information will be used but the secondary lever arm is not known.
       # 3 The GNSS dual antenna information will be used and we have a rough guess for the secondary lever arm.
       # 4 The GNSS dual antenna information will be used and the secondary lever arm is accurately entered and doesn't need online re-estimation.
-      secondaryLeverMode: 1
+      secondaryLeverMode: 3
     
       # Rejection mode for position
       # 0 Measurement is not taken into account
