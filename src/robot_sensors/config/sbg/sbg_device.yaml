@@ -159,20 +159,20 @@
       gnss_model_id: 107
     
       #GNSS primary antenna lever arm in IMU X axis (m)
-      primaryLeverArmX: 0.0
+      primaryLeverArmX: 0.640
       #GNSS primary antenna lever arm in IMU Y axis (m)
-      primaryLeverArmY: 0.0
+      primaryLeverArmY: 0.000
       #GNSS primary antenna lever arm in IMU Z axis (m)
-      primaryLeverArmZ: 0.0
+      primaryLeverArmZ: -0.685
       #GNSS primary antenna precise. Set to true if the primary lever arm has been accurately entered and doesn't need online re-estimation.
       primaryLeverPrecise: true
     
       #GNSS secondary antenna lever arm in IMU X axis (m)
-      secondaryLeverArmX: -1.28
+      secondaryLeverArmX: -0.640
       #GNSS secondary antenna lever arm in IMU Y axis (m)
-      secondaryLeverArmY: 0.0
+      secondaryLeverArmY: 0.000
       #GNSS secondary antenna lever arm in IMU Z axis (m)
-      secondaryLeverArmZ: 0.0
+      secondaryLeverArmZ: -0.685
     
       # Secondary antenna operating mode.
       # 1 The GNSS will be used in single antenna mode only and the secondary lever arm is not used.

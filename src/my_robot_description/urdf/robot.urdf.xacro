@@ -234,9 +234,20 @@
   <!-- ====================================================== -->
 
   <!--
-    TEMPORARY extrinsic transform.
-    Measure actual SBG position/orientation before localization
-    experiments.
+    SBG IMU reference point.
+    SBG is located approximately at the chassis planar
+    geometric center.
+
+    Measured IMU reference height:
+      approximately 0.685 m above ground.
+
+    base_link height:
+      approximately 0.220 m above ground.
+
+    Therefore:
+      base_link -> imu_link z
+      = 0.685 - 0.220
+      = 0.465 m
   -->
 
   <link name="imu_link"/>
@@ -247,19 +258,35 @@
     <child link="imu_link"/>
 
     <origin
-      xyz="0 0 0"
+      xyz="0 0 0.465"
       rpy="0 0 0"/>
 
   </joint>
 
 
   <!-- ====================================================== -->
-  <!-- GNSS main antenna frame                                -->
+  <!-- GNSS Primary antenna frame                             -->
   <!-- ====================================================== -->
 
   <!--
-    TEMPORARY extrinsic transform.
-    Replace with measured main antenna phase-center position.
+    gps_link represents the ANT1 / Primary GNSS antenna
+    phase center.
+
+    Measured antenna geometry relative to the SBG IMU:
+      X = +0.640 m forward
+      Y =  0.000 m
+      Z = +0.685 m upward in ROS FLU coordinates
+
+    Therefore relative to base_link:
+      X = +0.640 m
+      Y =  0.000 m
+      Z = 0.465 + 0.685
+        = 1.150 m
+
+    The corresponding SBG internal lever arm is expressed
+    in the SBG body frame (X forward, Y right, Z down), so
+    its Z sign is negative there. Do not confuse the SBG
+    lever arm convention with ROS FLU coordinates.
   -->
 
   <link name="gps_link"/>
@@ -270,7 +297,7 @@
     <child link="gps_link"/>
 
     <origin
-      xyz="0 0 0"
+      xyz="0.640 0 1.150"
       rpy="0 0 0"/>
 
   </joint>
