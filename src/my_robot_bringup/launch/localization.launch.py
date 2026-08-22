@@ -21,12 +21,29 @@ def generate_launch_description():
         "navsat.yaml"
     )
 
+    ekf_global_config_file = os.path.join(
+        bringup_share,
+        "config",
+        "ekf_global.yaml"
+    )
+
     ekf_node = Node(
         package="robot_localization",
         executable="ekf_node",
         name="ekf_filter_node",
         output="screen",
         parameters=[ekf_config_file]
+    )
+
+    ekf_global_node = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_global_filter_node",
+        output="screen",
+        parameters=[ekf_global_config_file],
+        remappings=[
+            ("odometry/filtered", "/odometry/global"),
+        ]
     )
 
     navsat_node = Node(
@@ -46,5 +63,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         ekf_node,
+        ekf_global_node,
         navsat_node
     ])
