@@ -17,3 +17,20 @@ frames_*.png
 
 # External packages
 src/sbg_ros2_driver/
+
+# Local backup files
+*.backup_*
+*.bak
+*.save
+*.before_*
+
+# ROS bag / experiment data
+rosbags/
+*.db3
+*.mcap
+
+# Backup directories
+*_backup_*/
+
+# Locally patched third-party DepthAI driver
+src/depthai_ros_driver_v3_fix/

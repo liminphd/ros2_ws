@@ -3,63 +3,47 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+
+
+def include_launch(package_name, launch_file):
+    return IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory(package_name),
+                "launch",
+                launch_file,
+            )
+        )
+    )
 
 
 def generate_launch_description():
 
-    bringup_dir = get_package_share_directory("my_robot_bringup")
-
-    use_lidar = LaunchConfiguration("use_lidar")
-    use_camera = LaunchConfiguration("use_camera")
-
-    declare_use_lidar = DeclareLaunchArgument(
-        "use_lidar",
-        default_value="true",
-        description="Start the CSPC LiDAR driver"
+    description = include_launch(
+        "my_robot_bringup",
+        "description.launch.py",
     )
 
-    declare_use_camera = DeclareLaunchArgument(
-        "use_camera",
-        default_value="true",
-        description="Start the Orbbec Gemini 335 camera driver"
+    sensors = include_launch(
+        "my_robot_bringup",
+        "sensors.launch.py",
     )
 
-    description_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(bringup_dir, "launch", "description.launch.py")
-        )
+    base_interface = include_launch(
+        "amiga_base_interface",
+        "base_interface.launch.py",
     )
 
-    sensors_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(bringup_dir, "launch", "sensors.launch.py")
-        ),
-        launch_arguments={
-            "use_lidar": use_lidar,
-            "use_camera": use_camera,
-        }.items()
-    )
-
-    localization_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(bringup_dir, "launch", "localization.launch.py")
-        )
-    )
-
-    visualization_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(bringup_dir, "launch", "visualization.launch.py")
-        )
+    local_localization = include_launch(
+        "my_robot_bringup",
+        "local_localization.launch.py",
     )
 
     return LaunchDescription([
-        declare_use_lidar,
-        declare_use_camera,
-        description_launch,
-        sensors_launch,
-        localization_launch,
-        visualization_launch,
+        description,
+        sensors,
+        base_interface,
+        local_localization,
     ])

@@ -1,7 +1,7 @@
 /oak1:
   ros__parameters:
     driver:
-      i_device_id: "14442C10A1B3E6D200"
+      i_ip: "10.95.76.11"
       i_enable_ir: true
 
     pipeline_gen:

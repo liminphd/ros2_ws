@@ -27,7 +27,7 @@ def generate_launch_description():
         launch_arguments={
             'name': 'oak0',
             'namespace': '',
-            'parent_frame': 'base_link',
+            'parent_frame': 'front_camera_link',
             'params_file': params_file,
             'use_rviz': 'false',
             'publish_tf_from_calibration': 'true',

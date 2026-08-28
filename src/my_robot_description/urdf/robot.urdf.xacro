@@ -20,8 +20,8 @@
     These are NOT the skid-steer kinematic dimensions.
     Update after final mechanical modification.
   -->
-  <xacro:property name="base_length" value="1.20"/>
-  <xacro:property name="base_width" value="0.50"/>
+  <xacro:property name="base_length" value="1.41"/>
+  <xacro:property name="base_width" value="0.80"/>
   <xacro:property name="base_height" value="0.20"/>
 
 
@@ -79,15 +79,22 @@
 
 
   <!--
-    base_link origin is approximately at the chassis geometric center.
-    With a 0.22 m wheel radius and 0.20 m chassis height,
-    this temporary height places the wheels near the ground plane.
+    Coordinate convention:
+      X = forward
+      Y = left
+      Z = up
+
+    base_link origin is defined at the geometric center
+    of the SBG IMU.
+
+    Measured SBG center height above ground:
+      0.715 m
   -->
 
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0.22" rpy="0 0 0"/>
+    <origin xyz="0 0 0.715" rpy="0 0 0"/>
   </joint>
 
 
@@ -197,15 +204,16 @@
 
 
   <!-- ====================================================== -->
-  <!-- Camera frame                                           -->
+  <!-- Front camera frame                                           -->
   <!-- ====================================================== -->
 
   <!--
-    Existing temporary camera transform.
-    Update later using actual measured sensor mounting position.
+    Temporary front camera transform.
+    Camera position may be changed after final mechanical
+    modification, so this transform is NOT final.
   -->
 
-  <link name="camera_link">
+  <link name="front_camera_link">
 
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -217,15 +225,44 @@
 
   </link>
 
-  <joint name="camera_joint" type="fixed">
+  <joint name="front_camera_joint" type="fixed">
 
     <parent link="base_link"/>
-    <child link="camera_link"/>
+    <child link="front_camera_link"/>
 
     <origin
-      xyz="0.30 0 0.13"
-      rpy="0 0 0"/>
+      xyz="0.56 0 0.58"
+      rpy="0 0.2618 0"/>
 
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Rear camera frame                                      -->
+  <!-- ====================================================== -->
+
+  <!--
+    Temporary rear camera transform.
+    Position and approximately 15 degree downward tilt
+    are based on current mechanical installation.
+  -->
+
+  <link name="rear_camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.115 0.025"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+
+  <joint name="rear_camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_camera_link"/>
+    <origin
+      xyz="-0.79 0 0.58"
+      rpy="0 -0.2618 3.14159"/>
   </joint>
 
 
@@ -234,20 +271,8 @@
   <!-- ====================================================== -->
 
   <!--
-    SBG IMU reference point.
-    SBG is located approximately at the chassis planar
-    geometric center.
-
-    Measured IMU reference height:
-      approximately 0.685 m above ground.
-
-    base_link height:
-      approximately 0.220 m above ground.
-
-    Therefore:
-      base_link -> imu_link z
-      = 0.685 - 0.220
-      = 0.465 m
+    base_link is defined at the SBG IMU geometric center.
+    Therefore imu_link is coincident with base_link.
   -->
 
   <link name="imu_link"/>
@@ -258,35 +283,25 @@
     <child link="imu_link"/>
 
     <origin
-      xyz="0 0 0.465"
+      xyz="0 0 0"
       rpy="0 0 0"/>
 
   </joint>
 
 
   <!-- ====================================================== -->
-  <!-- GNSS Primary antenna frame                             -->
+  <!-- SBG GNSS primary antenna ANT1                          -->
   <!-- ====================================================== -->
 
   <!--
-    gps_link represents the ANT1 / Primary GNSS antenna
-    phase center.
+    ANT1 / Primary GNSS antenna relative to the SBG center:
 
-    Measured antenna geometry relative to the SBG IMU:
       X = +0.640 m forward
       Y =  0.000 m
-      Z = +0.685 m upward in ROS FLU coordinates
+      Z = +0.685 m upward
 
-    Therefore relative to base_link:
-      X = +0.640 m
-      Y =  0.000 m
-      Z = 0.465 + 0.685
-        = 1.150 m
-
-    The corresponding SBG internal lever arm is expressed
-    in the SBG body frame (X forward, Y right, Z down), so
-    its Z sign is negative there. Do not confuse the SBG
-    lever arm convention with ROS FLU coordinates.
+    ROS frame convention:
+      X forward, Y left, Z up
   -->
 
   <link name="gps_link"/>
@@ -297,10 +312,65 @@
     <child link="gps_link"/>
 
     <origin
-      xyz="0.640 0 1.150"
+      xyz="0.640 0 0.685"
       rpy="0 0 0"/>
 
   </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Independent white GNSS antenna                         -->
+  <!-- ====================================================== -->
+
+  <!--
+    Farm-ng white GNSS antenna relative to SBG/base_link:
+
+      X = +0.480 m
+      Y =  0.000 m
+      Z = +0.645 m
+  -->
+
+  <link name="white_gnss_link"/>
+
+  <joint name="white_gnss_joint" type="fixed">
+
+    <parent link="base_link"/>
+    <child link="white_gnss_link"/>
+
+    <origin
+      xyz="0.480 0 0.645"
+      rpy="0 0 0"/>
+
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Velodyne VLP-16                                        -->
+  <!-- ====================================================== -->
+
+  <!--
+    Velodyne center relative to SBG/base_link:
+
+      X = +0.680 m
+      Y = +0.150 m
+      Z = +0.210 m
+
+    Positive Y is robot left side.
+  -->
+
+  <link name="velodyne"/>
+
+  <joint name="velodyne_joint" type="fixed">
+
+    <parent link="base_link"/>
+    <child link="velodyne"/>
+
+    <origin
+      xyz="0.680 0.150 0.210"
+      rpy="0 0 0"/>
+
+  </joint>
+
 
 
 </robot>

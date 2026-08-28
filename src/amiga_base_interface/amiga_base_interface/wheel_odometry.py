@@ -12,7 +12,7 @@ class WheelOdometry(Node):
     def __init__(self):
         super().__init__('amiga_wheel_odometry')
 
-        self.declare_parameter('wheel_radius', 0.20626480624709637)
+        self.declare_parameter('wheel_radius', 0.216)
         self.declare_parameter('gear_ratio', 30.0)
         self.declare_parameter('track_width', 1.229)
 
