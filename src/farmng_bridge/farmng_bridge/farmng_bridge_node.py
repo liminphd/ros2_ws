@@ -8,7 +8,7 @@ from rclpy.node import Node
 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import NavSatFix, NavSatStatus
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Int32
 
 import websockets
 from nexus.nexus_pb2 import Feedback
@@ -22,7 +22,9 @@ class FarmngBridge(Node):
     def __init__(self):
         super().__init__("farmng_bridge")
 
+        # ---------------------------------------------------------
         # ROS2 publishers
+        # ---------------------------------------------------------
         self.odom_pub = self.create_publisher(
             Odometry,
             "/farmng/odom",
@@ -38,6 +40,31 @@ class FarmngBridge(Node):
         self.heading_pub = self.create_publisher(
             Float64,
             "/farmng/heading",
+            10,
+        )
+
+        # GNSS / RTK quality publishers
+        self.carr_soln_pub = self.create_publisher(
+            Int32,
+            "/farmng/gps/carr_soln_kind",
+            10,
+        )
+
+        self.correction_kind_pub = self.create_publisher(
+            Int32,
+            "/farmng/gps/correction_kind",
+            10,
+        )
+
+        self.h_acc_pub = self.create_publisher(
+            Float64,
+            "/farmng/gps/horizontal_accuracy",
+            10,
+        )
+
+        self.v_acc_pub = self.create_publisher(
+            Float64,
+            "/farmng/gps/vertical_accuracy",
             10,
         )
 
@@ -107,16 +134,36 @@ class FarmngBridge(Node):
         now = self.get_clock().now().to_msg()
 
         # ---------------------------------------------------------
-        # Cache latest GNSS accuracy
+        # Farm-ng capabilities -> GNSS / RTK quality
         # ---------------------------------------------------------
         if state.HasField("capabilities"):
             c = state.capabilities
 
+            # Carrier solution:
+            # 0 = no carrier solution
+            # 1 = float
+            # 2 = fixed
+            carr = Int32()
+            carr.data = int(c.carr_soln_kind)
+            self.carr_soln_pub.publish(carr)
+
+            correction = Int32()
+            correction.data = int(c.gps_correction_kind)
+            self.correction_kind_pub.publish(correction)
+
             if c.HasField("gps_horizontal_accuracy"):
                 self.gps_h_acc = c.gps_horizontal_accuracy
 
+                h_msg = Float64()
+                h_msg.data = float(self.gps_h_acc)
+                self.h_acc_pub.publish(h_msg)
+
             if c.HasField("gps_vertical_accuracy"):
                 self.gps_v_acc = c.gps_vertical_accuracy
+
+                v_msg = Float64()
+                v_msg.data = float(self.gps_v_acc)
+                self.v_acc_pub.publish(v_msg)
 
         # ---------------------------------------------------------
         # Farm-ng motion estimation -> /farmng/odom

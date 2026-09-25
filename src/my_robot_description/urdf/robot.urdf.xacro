@@ -203,13 +203,31 @@
 
 
   <!-- ====================================================== -->
-  <!-- Front camera frame                                           -->
+  <!-- Front OAK camera                                      -->
   <!-- ====================================================== -->
 
   <!--
-    Temporary front camera transform.
-    Camera position may be changed after final mechanical
-    modification, so this transform is NOT final.
+    Front OAK mechanical mounting frame.
+
+    Coordinate convention:
+      X = robot forward
+      Y = robot left
+      Z = robot up
+
+    Measured mounting position relative to base_link:
+      X = +0.790 m
+      Y =  0.000 m
+      Z = +0.580 m
+
+    Camera is pitched approximately 15 degrees downward.
+
+    IMPORTANT:
+    front_camera_link represents the mechanical/base frame of the
+    complete OAK camera. Internal optical frames below are derived
+    from the factory EEPROM calibration of OAK0.
+
+    Front OAK0:
+      MXID: 14442C1071C4CDD200
   -->
 
   <link name="front_camera_link">
@@ -230,23 +248,157 @@
     <child link="front_camera_link"/>
 
     <origin
-      xyz="0.56 0 0.58"
+      xyz="0.79 0 0.58"
       rpy="0 0.2618 0"/>
 
   </joint>
 
 
   <!-- ====================================================== -->
-  <!-- Rear camera frame                                      -->
+  <!-- Front OAK RIGHT physical camera frame                  -->
   <!-- ====================================================== -->
 
   <!--
-    Temporary rear camera transform.
-    Position and approximately 15 degree downward tilt
-    are based on current mechanical installation.
+    The current Brain-side StereoDepth pipeline uses:
+
+      LEFT  = CAM_B / socket 1
+      RIGHT = CAM_C / socket 2
+
+    StereoDepth depthAlign is RECTIFIED_RIGHT.
+
+    The RIGHT-camera transform below is derived from the
+    OAK0 factory EEPROM calibration and converted using the
+    same DepthAI ROS coordinate conversion used by the
+    official Luxonis ROS TF publisher.
+
+    EEPROM RIGHT -> RGB translation [cm]:
+      [3.76089215, 0.013627666, 0.028309220]
+
+    Converted ROS translation [m]:
+      X = +0.0002830922
+      Y = -0.0376089215
+      Z = -0.0001362767
+
+    Converted ROS rotation [rad]:
+      roll  = +0.01093888
+      pitch = -0.01895032
+      yaw   = +0.00408157
+  -->
+
+  <link name="front_camera_right_frame"/>
+
+  <joint name="front_camera_right_joint" type="fixed">
+
+    <parent link="front_camera_link"/>
+    <child link="front_camera_right_frame"/>
+
+    <origin
+      xyz="0.0002830922 -0.0376089215 -0.0001362767"
+      rpy="0.01093888 -0.01895032 0.00408157"/>
+
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Front OAK RIGHT optical frame                          -->
+  <!-- ====================================================== -->
+
+  <!--
+    Standard ROS optical-frame convention:
+
+      +X = image right
+      +Y = image down
+      +Z = optical forward
+
+    Rotation is equivalent to the optical transform used by
+    the Luxonis ROS TF publisher:
+
+      quaternion (x,y,z,w)
+        = (-0.5, +0.5, -0.5, +0.5)
+
+    Equivalent RPY:
+      roll  = -pi/2
+      pitch = 0
+      yaw   = -pi/2
+  -->
+
+  <link name="front_camera_right_optical_frame"/>
+
+  <joint name="front_camera_right_optical_joint" type="fixed">
+
+    <parent link="front_camera_right_frame"/>
+    <child link="front_camera_right_optical_frame"/>
+
+    <origin
+      xyz="0 0 0"
+      rpy="-1.57079632679 0 -1.57079632679"/>
+
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Front OAK rectified RIGHT depth optical frame          -->
+  <!-- ====================================================== -->
+
+  <!--
+    The Brain StereoDepth pipeline does NOT publish depth in the
+    unrectified physical RIGHT optical frame.
+
+    StereoDepth configuration:
+      depthAlign = RECTIFIED_RIGHT
+
+    Factory EEPROM rectifiedRotationRight:
+
+      [ 0.999908209  -0.001830261   0.013426391 ]
+      [ 0.001811802   0.999997377   0.001386874 ]
+      [-0.013428895  -0.001362421   0.999908924 ]
+
+    The TF below represents the rectified-right optical frame
+    relative to the physical right optical frame.
+
+    This frame is the coordinate frame used by:
+
+      /camera/front/depth/image_raw
+      /camera/front/depth/camera_info
+      /camera/front/depth/points
+
+    and MUST match the frame_id published by farmng_depth_bridge.
+  -->
+
+  <link name="front_camera_depth_optical_frame"/>
+
+  <joint name="front_camera_depth_optical_joint" type="fixed">
+
+    <parent link="front_camera_right_optical_frame"/>
+    <child link="front_camera_depth_optical_frame"/>
+
+    <origin
+      xyz="0 0 0"
+      rpy="0.00138700 -0.01342679 -0.00183043"/>
+
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Rear OAK camera                                       -->
+  <!-- ====================================================== -->
+
+  <!--
+    Rear OAK mechanical mounting frame.
+
+    Position and approximately 15 degree downward tilt are based
+    on the current mechanical installation.
+
+    The rear camera is required for near-field obstacle perception
+    during reversing and turning.
+
+    Its internal calibrated optical/depth frames will be added from
+    the REAR OAK EEPROM calibration; front-camera calibration values
+    must NOT be reused here.
   -->
 
   <link name="rear_camera_link">
+
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -254,16 +406,133 @@
       </geometry>
       <material name="black"/>
     </visual>
+
   </link>
 
   <joint name="rear_camera_joint" type="fixed">
+
     <parent link="base_link"/>
     <child link="rear_camera_link"/>
+
     <origin
       xyz="-0.79 0 0.58"
-      rpy="0 -0.2618 3.14159"/>
+      rpy="0 0.2618 3.14159"/>
+
+  </joint>
+  <!-- ====================================================== -->
+  <!-- Rear OAK RIGHT physical camera frame                   -->
+  <!-- ====================================================== -->
+
+  <!--
+    Rear OAK1 factory calibration.
+
+    Rear OAK1:
+      MXID: 14442C10A1B3E6D200
+
+    The Brain-side StereoDepth pipeline uses:
+
+      LEFT  = CAM_B / socket 1
+      RIGHT = CAM_C / socket 2
+
+    StereoDepth depthAlign = RECTIFIED_RIGHT.
+
+    EEPROM RIGHT -> RGB translation [cm]:
+      [3.761663914, 0.016400071, -0.035180192]
+
+    Converted ROS translation [m]:
+      X = -0.000351802
+      Y = -0.037616639
+      Z = -0.000164001
+
+    Converted ROS rotation [rad]:
+      roll  = +0.04121807
+      pitch = -0.00155343
+      yaw   = -0.03745893
+  -->
+
+  <link name="rear_camera_right_frame"/>
+
+  <joint name="rear_camera_right_joint" type="fixed">
+
+    <parent link="rear_camera_link"/>
+    <child link="rear_camera_right_frame"/>
+
+    <origin
+      xyz="-0.000351802 -0.037616639 -0.000164001"
+      rpy="0.04121807 -0.00155343 -0.03745893"/>
+
   </joint>
 
+
+  <!-- ====================================================== -->
+  <!-- Rear OAK RIGHT optical frame                           -->
+  <!-- ====================================================== -->
+
+  <!--
+    Standard ROS optical-frame convention:
+
+      +X = image right
+      +Y = image down
+      +Z = optical forward
+
+    Luxonis ROS optical transform:
+
+      quaternion (x,y,z,w)
+        = (-0.5, +0.5, -0.5, +0.5)
+
+    Equivalent RPY:
+      roll  = -pi/2
+      pitch = 0
+      yaw   = -pi/2
+  -->
+
+  <link name="rear_camera_right_optical_frame"/>
+
+  <joint name="rear_camera_right_optical_joint" type="fixed">
+
+    <parent link="rear_camera_right_frame"/>
+    <child link="rear_camera_right_optical_frame"/>
+
+    <origin
+      xyz="0 0 0"
+      rpy="-1.57079632679 0 -1.57079632679"/>
+
+  </joint>
+
+
+  <!-- ====================================================== -->
+  <!-- Rear OAK rectified RIGHT depth optical frame           -->
+  <!-- ====================================================== -->
+
+  <!--
+    Factory EEPROM rectifiedRotationRight:
+
+      [ 0.999594510  -0.004694043   0.028086038 ]
+      [ 0.004702227   0.999988914  -0.000225337 ]
+      [-0.028084669   0.000357313   0.999605477 ]
+
+    The transform below represents the RECTIFIED_RIGHT depth
+    optical frame used by the rear StereoDepth output.
+
+    Future ROS topics:
+
+      /camera/rear/depth/image_raw
+      /camera/rear/depth/camera_info
+      /camera/rear/depth/points
+  -->
+
+  <link name="rear_camera_depth_optical_frame"/>
+
+  <joint name="rear_camera_depth_optical_joint" type="fixed">
+
+    <parent link="rear_camera_right_optical_frame"/>
+    <child link="rear_camera_depth_optical_frame"/>
+
+    <origin
+      xyz="0 0 0"
+      rpy="-0.00022543 -0.02808973 -0.00469591"/>
+
+  </joint>
 
   <!-- ====================================================== -->
   <!-- SBG IMU frame                                          -->

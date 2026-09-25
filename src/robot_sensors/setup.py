@@ -81,6 +81,7 @@ setup(
     entry_points={
         'console_scripts': [
             'imu_covariance_node = robot_sensors.imu_covariance_node:main',
+            'scan_self_mask = robot_sensors.scan_self_mask_node:main',
         ],
     },
 )

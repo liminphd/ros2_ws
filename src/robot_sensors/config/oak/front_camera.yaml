@@ -6,3 +6,17 @@
 
     pipeline_gen:
       i_pipeline_type: RGBD
+
+    rgb:
+      i_fps: 15.0
+      i_low_bandwidth: true
+
+    left:
+      i_low_bandwidth: true
+
+    right:
+      i_low_bandwidth: true
+
+    stereo:
+      i_fps: 15.0
+      i_low_bandwidth: true

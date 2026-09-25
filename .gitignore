@@ -34,3 +34,11 @@ rosbags/
 
 # Locally patched third-party DepthAI driver
 src/depthai_ros_driver_v3_fix/
+
+# Runtime data and local backups
+bags/
+logs/
+webrtc_test/
+*.bak
+*.bak_*
+*.backup_*
