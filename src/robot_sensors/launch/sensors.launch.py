@@ -51,25 +51,8 @@ def generate_launch_description():
         }],
     )
 
-    # ---------------------------------------------------------
-    # Farm-ng camera bridge
-    #
-    # OAK cameras are owned by the Farm-ng Brain / Furrow Assist.
-    # Do NOT launch the old direct DepthAI OAK nodes here.
-    #
-    # oak/0/mono -> /camera/front/image_raw
-    # oak/1/mono -> /camera/rear/image_raw
-    # ---------------------------------------------------------
-    farmng_camera_bridge = Node(
-        package="farmng_bridge",
-        executable="farmng_camera_bridge",
-        name="farmng_camera_bridge",
-        output="screen",
-    )
-
     return LaunchDescription([
         velodyne_launch,
         sbg_launch,
         imu_covariance_node,
-        farmng_camera_bridge,
     ])
