@@ -41,9 +41,15 @@ def generate_launch_description():
         "local_localization.launch.py",
     )
 
+    perception = include_launch(
+        "my_robot_bringup",
+        "perception.launch.py",
+    )
+
     return LaunchDescription([
         description,
         sensors,
         base_interface,
         local_localization,
+        perception,
     ])

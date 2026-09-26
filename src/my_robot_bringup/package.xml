@@ -1,14 +1,57 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+             schematypens="http://www.w3.org/2001/XMLSchema"?>
+
 <package format="3">
   <name>my_robot_bringup</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="liminphd@gmail.com">min</maintainer>
-  <license>TODO: License declaration</license>
+  <version>0.1.0</version>
 
-  <depend>launch</depend>
-  <depend>launch_ros</depend>
+  <description>
+    ROS 2 bringup package for the autonomous agricultural robot,
+    including robot description, sensors, localization, perception,
+    SLAM, visualization, and Nav2 integration.
+  </description>
+
+  <maintainer email="liminphd@gmail.com">Min Li</maintainer>
+  <license>TODO</license>
+
+  <!-- Launch infrastructure -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+
+  <!-- Robot platform -->
+  <exec_depend>my_robot_description</exec_depend>
+  <exec_depend>robot_sensors</exec_depend>
+  <exec_depend>amiga_base_interface</exec_depend>
+  <exec_depend>farmng_bridge</exec_depend>
+
+  <!-- Robot description -->
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <!-- Localization -->
+  <exec_depend>robot_localization</exec_depend>
+
+  <!-- Perception -->
+  <exec_depend>depth_image_proc</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+
+  <!-- SLAM and visualization -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- Navigation2 -->
+  <exec_depend>nav2_common</exec_depend>
+  <exec_depend>nav2_controller</exec_depend>
+  <exec_depend>nav2_smoother</exec_depend>
+  <exec_depend>nav2_planner</exec_depend>
+  <exec_depend>nav2_behaviors</exec_depend>
+  <exec_depend>nav2_bt_navigator</exec_depend>
+  <exec_depend>nav2_waypoint_follower</exec_depend>
+  <exec_depend>nav2_velocity_smoother</exec_depend>
+  <exec_depend>nav2_collision_monitor</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
