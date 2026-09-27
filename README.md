@@ -101,6 +101,17 @@ This mode should be used first when checking:
 - depth point clouds
 - obstacle clouds
 
+For handoff and selective static integration tests, use:
+
+    ros2 launch my_robot_bringup demo.launch.py
+
+`demo.launch.py` provides six switches, enabled by default:
+`use_description`, `use_sensors`, `use_base_feedback`,
+`use_localization`, `use_perception`, and `use_rviz`.
+
+It does not start Nav2 navigation, a controller, the collision monitor,
+or the robot motion-command chain.
+
 ### Navigation
 
 `navigation.launch.py` is a separate motion-capable launch file.
@@ -180,6 +191,12 @@ Use the following order when bringing up the static system.
 Before starting ROS 2 perception, confirm that the front and rear depth
 servers and the passive motor RPM feedback process are running on the
 Farm-ng Brain.
+
+The native Farm-ng Furrow Assist service and the custom ROS 2 depth
+servers cannot own the Ethernet OAK cameras at the same time. After a
+Brain reboot, verify OAK ownership before starting the custom depth
+servers. The tested mode-switching procedure and camera-to-port mapping
+are documented in `tools/amiga_brain/README.md`.
 
 Do not overwrite or restart active Brain-side scripts during a robot
 session unless the shutdown and restart are intentional.
@@ -317,6 +334,27 @@ SLAM and GNSS/global localization represent different operating modes.
 Select the mode appropriate to the environment and experiment rather
 than starting every localization component simultaneously.
 
+### Saved Map Workflow
+
+After a mapping run, save the completed occupancy map with the Nav2 map
+saver. A saved map consists of a YAML metadata file and its image file.
+
+A saved map can then be loaded independently with:
+
+    ros2 launch my_robot_bringup map.launch.py map:=/absolute/path/to/map.yaml
+
+`map.launch.py` starts only `nav2_map_server` and its dedicated lifecycle
+manager. It does not start navigation or the robot motion-command chain.
+
+The intended mapping/navigation handoff is:
+
+    /scan_multi -> SLAM Toolbox -> /map -> saved map
+    saved map -> map_server -> /map -> Nav2 global costmap
+
+The map-server loading path has been statically validated with a test
+OccupancyGrid. Actual map quality, map saving after a driven mapping run,
+and navigation against a real saved map still require motion validation.
+
 ## Navigation
 
 Navigation is intentionally started separately:
@@ -411,6 +449,13 @@ current AMIGA platform:
 - front OAK obstacle input to the Nav2 local costmap
 - rear OAK obstacle input to the Nav2 local costmap
 - combined LiDAR + front OAK + rear OAK local-costmap marking
+- SLAM Toolbox static startup using `/scan_multi`, including `map -> odom`
+  TF publication
+- saved-map loading through `map.launch.py`, including active
+  `map_server` lifecycle state and transient-local `/map` publication
+- collision-monitor static prerequisites, including footprint topic,
+  LiDAR input, and required TF availability
+- parameterized static handoff startup through `demo.launch.py`
 - long-duration ROS 2 MCAP experiment logging with
   `src/my_robot_bringup/scripts/record_research_core.sh`
 - short-duration LiDAR/costmap diagnostic logging with
@@ -448,7 +493,8 @@ the following items still require final validation and/or documentation:
 - emergency-stop and recovery procedure
 - outdoor validation of AMIGA trajectory recording, saving, and reload
 - outdoor GNSS/global localization validation
-- parameterized demonstration procedure
+- driven SLAM mapping, real-map save/reload, and navigation validation
+- final end-to-end demonstration procedure
 - migration procedure for the second robot platform
 - final operator troubleshooting guide
 

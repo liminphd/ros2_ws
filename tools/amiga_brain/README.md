@@ -34,6 +34,34 @@ Both depth pipelines use:
 - `16UC1` depth in millimetres
 - PNG transport over WebSocket
 
+## OAK Camera Ownership
+
+The front and rear Ethernet OAK cameras must not be opened by the
+Farm-ng Furrow Assist stack and the custom ROS 2 depth servers at the
+same time.
+
+After a Brain reboot, Furrow Assist may start automatically because
+`farmng-furrow_assist_25_0.service` is enabled.
+
+For ROS 2 perception mode, first run on the Brain:
+
+    systemctl --user stop farmng-furrow_assist_25_0.service
+
+Verify that the service is inactive and that DepthAI can discover both
+OAK cameras before starting `front_depth_server.py` and
+`rear_depth_server.py`.
+
+Do not disable or modify the Farm-ng service. To return to the native
+Farm-ng mode, first stop both custom depth servers so that they release
+the cameras, then run:
+
+    systemctl --user start farmng-furrow_assist_25_0.service
+
+Tested ROS 2 perception-mode mapping:
+
+    Front OAK 10.95.76.10 -> front_depth_server.py -> WebSocket 8765
+    Rear OAK  10.95.76.11 -> rear_depth_server.py  -> WebSocket 8766
+
 ## 1. Front Depth Server
 
 Run on the Brain:
