@@ -485,21 +485,34 @@ avoidance or the complete robot safety chain.
 ## Remaining Handoff Work
 
 Before treating the repository as a complete autonomous-robot handoff,
-the following items still require final validation and/or documentation:
+the following items still require final validation and/or documentation.
 
-- controlled motion test of the complete Nav2 command path
-- dynamic obstacle stop/avoidance behavior
-- joystick/manual override behavior
-- emergency-stop and recovery procedure
-- outdoor validation of AMIGA trajectory recording, saving, and reload
-- outdoor GNSS/global localization validation
-- driven SLAM mapping, real-map save/reload, and navigation validation
-- final end-to-end demonstration procedure
-- migration procedure for the second robot platform
-- final operator troubleshooting guide
+### Phase 1 — Motion Safety and Control
 
-These items should be documented as they are verified rather than
-being described as completed in advance.
+- [ ] controlled motion test of the complete Nav2 command path
+- [ ] joystick/manual override behavior
+- [ ] emergency-stop and recovery procedure
+
+### Phase 2 — Mapping and Localization
+
+- [ ] driven SLAM mapping and real-map saving
+- [ ] saved-map reload and localization validation
+- [ ] outdoor GNSS/global localization validation
+
+### Phase 3 — Autonomous Operation
+
+- [ ] map-based navigation validation
+- [ ] dynamic obstacle stop/avoidance behavior
+- [ ] outdoor validation of AMIGA trajectory recording, saving, and reload
+
+### Phase 4 — Final Handoff and Transfer
+
+- [ ] final end-to-end demonstration procedure
+- [ ] migration procedure for the second robot platform
+- [ ] final operator troubleshooting guide
+
+These items should be documented and checked off only after they are
+actually verified rather than being described as completed in advance.
 
 ## Architecture Documentation
 
@@ -512,6 +525,10 @@ Current documents include:
 - `01_system_overview.md`
 - `02_package_design.md`
 - `03_sensor_architecture.md`
+
+Dynamic validation procedure:
+
+- `docs/validation/01_dynamic_validation_plan.md`
 
 ## Development Principle
 
