@@ -411,6 +411,28 @@ current AMIGA platform:
 - front OAK obstacle input to the Nav2 local costmap
 - rear OAK obstacle input to the Nav2 local costmap
 - combined LiDAR + front OAK + rear OAK local-costmap marking
+- long-duration ROS 2 MCAP experiment logging with
+  `src/my_robot_bringup/scripts/record_research_core.sh`
+- short-duration LiDAR/costmap diagnostic logging with
+  `src/my_robot_bringup/scripts/record_perception_debug.sh`
+
+The recorder scripts save bags under `~/ros2_ws/bag_data/` by default.
+This directory is ignored by Git so experiment data remain local to the
+operator machine. The output root can be changed with `AMIGA_BAG_ROOT`.
+
+`record_research_core.sh` records motor RPM, wheel odometry, processed
+IMU, local EKF output, SBG IMU/EKF/GNSS messages, and TF. The current
+`record_perception_debug.sh` profile records `/scan_multi`, the local
+costmap, and TF. Front/rear OAK obstacle point clouds should only be
+added to short diagnostic recordings when the OAK streams are available,
+because those point clouds substantially increase recording bandwidth.
+
+AMIGA native trajectory recording was also inspected on the Brain. The
+Map Recorder maintains a GNSS-derived track from the native AMIGA global pose
+and saves completed tracks as JSON under `/mnt/data/tracks/<track_name>.json`.
+Recording requires valid AMIGA GPS accuracy/global-pose data. The software
+workflow has been identified, but outdoor recording and reload still require
+validation with robot motion.
 
 Static obstacle integration does not by itself validate dynamic obstacle
 avoidance or the complete robot safety chain.
@@ -424,7 +446,7 @@ the following items still require final validation and/or documentation:
 - dynamic obstacle stop/avoidance behavior
 - joystick/manual override behavior
 - emergency-stop and recovery procedure
-- trajectory and experiment-log saving workflow
+- outdoor validation of AMIGA trajectory recording, saving, and reload
 - outdoor GNSS/global localization validation
 - parameterized demonstration procedure
 - migration procedure for the second robot platform
