@@ -508,10 +508,16 @@ the following items still require final validation and/or documentation.
 ### Phase 4 — Final Handoff and Transfer
 
 - [ ] final end-to-end demonstration procedure
-- [ ] migration procedure for the second robot platform
-- [ ] final operator troubleshooting guide
+- [ ] target-platform migration validation (migration procedure documented)
+- [x] final operator troubleshooting guide
 
-These items should be documented and checked off only after they are
+Handoff documentation:
+
+- `docs/handoff/01_operator_guide.md`
+- `docs/handoff/02_troubleshooting.md`
+- `docs/handoff/03_platform_migration.md`
+
+Validation-dependent items should be checked off only after they are
 actually verified rather than being described as completed in advance.
 
 ## Architecture Documentation
