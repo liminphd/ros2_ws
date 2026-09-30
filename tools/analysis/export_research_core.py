@@ -66,6 +66,13 @@ def motor_rpm_to_motion(data):
     }
 
 
+def quaternion_to_yaw(q):
+    """Return planar yaw [rad] from a geometry_msgs Quaternion."""
+    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+    return math.atan2(siny_cosp, cosy_cosp)
+
+
 def write_csv(path, rows):
     """Write extracted rows without modifying or resampling timestamps."""
     if not rows:
@@ -167,6 +174,9 @@ def main():
             rows[topic].append({
                 "bag_time_ns": bag_time_ns,
                 "header_time_ns": stamp_to_ns(msg.header.stamp),
+                "x": msg.pose.pose.position.x,
+                "y": msg.pose.pose.position.y,
+                "yaw": quaternion_to_yaw(msg.pose.pose.orientation),
                 "linear_x": msg.twist.twist.linear.x,
                 "angular_z": msg.twist.twist.angular.z,
             })
