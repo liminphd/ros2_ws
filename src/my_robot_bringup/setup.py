@@ -37,6 +37,8 @@ setup(
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            'workcell_coordinator = my_robot_bringup.workcell_coordinator:main',
+        ],
     },
 )

@@ -20,6 +20,10 @@
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>ament_index_python</exec_depend>
 
+  <!-- Workcell coordination -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>my_robot_interfaces</exec_depend>
+
   <!-- Robot platform -->
   <exec_depend>my_robot_description</exec_depend>
   <exec_depend>robot_sensors</exec_depend>
