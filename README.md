@@ -58,7 +58,11 @@ The current runtime architecture is:
         |       +--> PointCloud2
         |       +--> front/rear obstacle clouds
         |
-        +-- SLAM or GNSS/global localization
+        +-- localization mode
+        |       |
+        |       +-- SLAM Toolbox
+        |       +-- saved map + AMCL
+        |       +-- GNSS/global localization
         |
         +-- Nav2 navigation
 
@@ -105,12 +109,23 @@ For handoff and selective static integration tests, use:
 
     ros2 launch my_robot_bringup demo.launch.py
 
-`demo.launch.py` provides six switches, enabled by default:
-`use_description`, `use_sensors`, `use_base_feedback`,
-`use_localization`, `use_perception`, and `use_rviz`.
+`demo.launch.py` is the parameterized handoff/demo entry point. Its
+component switches are `use_description`, `use_sensors`,
+`use_base_feedback`, `use_localization`, `use_perception`, `use_rviz`,
+`use_slam`, `use_saved_map_localization`, `use_navigation`, and
+`use_base_control`. The `map` argument supplies the saved-map YAML path.
 
-It does not start Nav2 navigation, a controller, the collision monitor,
-or the robot motion-command chain.
+The sensor, feedback, localization, perception, and RViz components are
+enabled by default. SLAM, saved-map localization, Nav2, and base control
+are opt-in.
+
+Nav2 startup is guarded by a TF readiness gate. When navigation is
+requested, the gate waits for both `map -> odom` and
+`odom -> base_link` to remain available before `navigation.launch.py`
+is started.
+
+Robot actuation is a separate opt-in step. `use_base_control:=false`
+keeps the Farm-ng command bridge disabled even when Nav2 is active.
 
 ### Navigation
 
@@ -339,21 +354,48 @@ than starting every localization component simultaneously.
 After a mapping run, save the completed occupancy map with the Nav2 map
 saver. A saved map consists of a YAML metadata file and its image file.
 
-A saved map can then be loaded independently with:
+A saved map can be loaded independently with:
 
     ros2 launch my_robot_bringup map.launch.py map:=/absolute/path/to/map.yaml
 
-`map.launch.py` starts only `nav2_map_server` and its dedicated lifecycle
-manager. It does not start navigation or the robot motion-command chain.
+For saved-map localization, use:
 
-The intended mapping/navigation handoff is:
+    ros2 launch my_robot_bringup saved_map_localization.launch.py \
+      map:=/absolute/path/to/map.yaml
+
+This starts `nav2_map_server`, AMCL, and their lifecycle manager. AMCL
+uses `/scan_multi`, `odom`, and `base_link` and publishes the
+`map -> odom` transform after an initial pose is supplied.
+
+The complete parameterized static workflow is:
+
+    ros2 launch my_robot_bringup demo.launch.py \
+      use_rviz:=false \
+      use_slam:=false \
+      use_saved_map_localization:=true \
+      map:=/absolute/path/to/map.yaml \
+      use_navigation:=true \
+      use_base_control:=false
+
+With this workflow, Nav2 remains blocked by the TF readiness gate until
+AMCL has established `map -> odom` and the local EKF provides
+`odom -> base_link`. After the initial pose is supplied and the TF chain
+is stable, Nav2 starts automatically.
+
+The tested mapping/localization handoff is:
 
     /scan_multi -> SLAM Toolbox -> /map -> saved map
-    saved map -> map_server -> /map -> Nav2 global costmap
+    saved map -> map_server -> /map
+    /scan_multi + odom -> AMCL -> map -> odom
+    map -> odom + odom -> base_link -> TF gate -> Nav2
 
-The map-server loading path has been statically validated with a test
-OccupancyGrid. Actual map quality, map saving after a driven mapping run,
-and navigation against a real saved map still require motion validation.
+Saved-map loading, static AMCL pose initialization, the complete
+`map -> odom -> base_link` TF chain, TF-gated Nav2 startup, and Nav2
+lifecycle activation have been statically validated on the AMIGA.
+
+Actual map quality after a driven mapping run, localization accuracy
+during motion, relocalization behavior, and autonomous navigation against
+the saved map still require dynamic validation.
 
 ## Navigation
 
@@ -453,6 +495,12 @@ current AMIGA platform:
   TF publication
 - saved-map loading through `map.launch.py`, including active
   `map_server` lifecycle state and transient-local `/map` publication
+- saved-map localization through `nav2_map_server` and AMCL
+- AMCL initial-pose handling and `map -> odom` TF publication
+- complete saved-map `map -> odom -> base_link` TF chain
+- TF-gated Nav2 startup from the parameterized `demo.launch.py`
+- all eight managed Nav2 lifecycle nodes reaching the active state in
+  saved-map mode while the Farm-ng actuator bridge remains disabled
 - collision-monitor static prerequisites, including footprint topic,
   LiDAR input, and required TF availability
 - parameterized static handoff startup through `demo.launch.py`
@@ -546,7 +594,8 @@ the following items still require final validation and/or documentation.
 ### Phase 2 — Mapping and Localization
 
 - [ ] driven SLAM mapping and real-map saving
-- [ ] saved-map reload and localization validation
+- [x] saved-map reload and static AMCL localization integration
+- [ ] dynamic saved-map localization/relocalization validation
 - [ ] outdoor GNSS/global localization validation
 
 ### Phase 3 — Autonomous Operation
