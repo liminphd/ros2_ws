@@ -482,6 +482,56 @@ validation with robot motion.
 Static obstacle integration does not by itself validate dynamic obstacle
 avoidance or the complete robot safety chain.
 
+## Generic Workcell and Implement Integration
+
+The framework includes a generic coordination boundary between the mobile
+robot and an external agricultural workcell or implement. The mobile subsystem
+owns localization, navigation, base stopping, stationary confirmation, and
+mission continuation. The external subsystem owns its task-specific sensing,
+actuation, and internal control.
+
+The current ROS 2 interface has been mock-validated with a harvesting-arm
+workflow using:
+
+    STOP_REQUESTED
+        -> STOPPING
+        -> base stationary confirmation
+        -> BASE_READY
+        -> WORKING
+        -> COMPLETED
+        -> RESUME_ALLOWED
+
+The coordinator includes authorization and active-workcell gating so that an
+unrequested completion message cannot independently authorize mission resume.
+
+This interface is intentionally not specific to a harvesting arm. Future
+adapters may use the same architectural boundary for agricultural systems such
+as:
+
+- harvesting manipulators
+- seeders
+- cultivators
+- mowers
+- sprayers
+- other task-specific agricultural implements
+
+For example, a future seeding adapter may coordinate implement raise/disable
+before a headland turn and lower/enable after alignment with the next crop row.
+Such implement-specific commands are not implemented in the current framework.
+
+The following integrations also remain future work:
+
+- stationary detection from real mobile-base feedback
+- Nav2 mission pause/resume integration
+- real manipulator or implement adapters
+- multiple-workcell arbitration
+- implement-specific commands such as raise, lower, enable, disable, or
+  application-rate control
+
+The current implementation therefore validates the generic software
+coordination boundary, not physical manipulator or agricultural-implement
+integration.
+
 ## Remaining Handoff Work
 
 Before treating the repository as a complete autonomous-robot handoff,
