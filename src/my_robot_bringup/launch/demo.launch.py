@@ -3,10 +3,16 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    RegisterEventHandler,
+)
 from launch.conditions import IfCondition
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
 
 def include_launch(package_name, launch_file, condition):
@@ -29,6 +35,41 @@ def generate_launch_description():
     use_localization = LaunchConfiguration("use_localization")
     use_perception = LaunchConfiguration("use_perception")
     use_rviz = LaunchConfiguration("use_rviz")
+    use_slam = LaunchConfiguration("use_slam")
+    use_navigation = LaunchConfiguration("use_navigation")
+    use_base_control = LaunchConfiguration("use_base_control")
+
+    navigation_launch = include_launch(
+        "my_robot_bringup",
+        "navigation.launch.py",
+        use_navigation,
+    )
+
+    navigation_tf_gate = Node(
+        package="my_robot_bringup",
+        executable="wait_for_navigation_tf",
+        name="wait_for_navigation_tf",
+        output="screen",
+        condition=IfCondition(use_navigation),
+    )
+
+    def start_navigation_if_tf_ready(event, context):
+        if event.returncode == 0:
+            return [navigation_launch]
+
+        print(
+            "[demo.launch] Navigation TF gate exited without readiness; "
+            "Nav2 will NOT start."
+        )
+        return []
+
+    navigation_after_tf = RegisterEventHandler(
+        OnProcessExit(
+            target_action=navigation_tf_gate,
+            on_exit=start_navigation_if_tf_ready,
+        ),
+        condition=IfCondition(use_navigation),
+    )
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -61,6 +102,21 @@ def generate_launch_description():
             default_value="true",
             description="Start RViz.",
         ),
+        DeclareLaunchArgument(
+            "use_slam",
+            default_value="false",
+            description="Start SLAM Toolbox for online mapping and map-to-odom TF.",
+        ),
+        DeclareLaunchArgument(
+            "use_navigation",
+            default_value="false",
+            description="Start Nav2 planning, control, velocity smoothing, and collision monitoring.",
+        ),
+        DeclareLaunchArgument(
+            "use_base_control",
+            default_value="false",
+            description="Enable the AMIGA actuator command bridge. Requires the Brain Nexus relay.",
+        ),
 
         include_launch(
             "my_robot_bringup",
@@ -91,5 +147,24 @@ def generate_launch_description():
             "my_robot_bringup",
             "visualization.launch.py",
             use_rviz,
+        ),
+        include_launch(
+            "my_robot_bringup",
+            "slam.launch.py",
+            use_slam,
+        ),
+        navigation_tf_gate,
+        navigation_after_tf,
+        Node(
+            package="farmng_bridge",
+            executable="farmng_cmd_vel_bridge",
+            name="farmng_cmd_vel_bridge",
+            output="screen",
+            condition=IfCondition(use_base_control),
+            parameters=[{
+                "cmd_vel_topic": "/cmd_vel",
+                "relay_host": "10.95.76.1",
+                "relay_port": 15432,
+            }],
         ),
     ])

@@ -39,6 +39,7 @@ setup(
     entry_points={
         'console_scripts': [
             'workcell_coordinator = my_robot_bringup.workcell_coordinator:main',
+            'wait_for_navigation_tf = my_robot_bringup.wait_for_navigation_tf:main',
         ],
     },
 )
