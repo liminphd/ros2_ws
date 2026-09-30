@@ -11,7 +11,11 @@ from launch.actions import (
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import (
+    AndSubstitution,
+    LaunchConfiguration,
+    NotSubstitution,
+)
 from launch_ros.actions import Node
 
 
@@ -36,8 +40,29 @@ def generate_launch_description():
     use_perception = LaunchConfiguration("use_perception")
     use_rviz = LaunchConfiguration("use_rviz")
     use_slam = LaunchConfiguration("use_slam")
+    use_saved_map_localization = LaunchConfiguration(
+        "use_saved_map_localization"
+    )
+    map_yaml = LaunchConfiguration("map")
     use_navigation = LaunchConfiguration("use_navigation")
     use_base_control = LaunchConfiguration("use_base_control")
+
+    saved_map_condition = AndSubstitution(
+        use_saved_map_localization,
+        NotSubstitution(use_slam),
+    )
+
+    saved_map_localization_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                get_package_share_directory("my_robot_bringup"),
+                "launch",
+                "saved_map_localization.launch.py",
+            )
+        ),
+        condition=IfCondition(saved_map_condition),
+        launch_arguments={"map": map_yaml}.items(),
+    )
 
     navigation_launch = include_launch(
         "my_robot_bringup",
@@ -108,6 +133,19 @@ def generate_launch_description():
             description="Start SLAM Toolbox for online mapping and map-to-odom TF.",
         ),
         DeclareLaunchArgument(
+            "use_saved_map_localization",
+            default_value="false",
+            description=(
+                "Start map_server and AMCL for saved-map localization. "
+                "Ignored while use_slam is true."
+            ),
+        ),
+        DeclareLaunchArgument(
+            "map",
+            default_value="",
+            description="Full path to the saved map YAML file.",
+        ),
+        DeclareLaunchArgument(
             "use_navigation",
             default_value="false",
             description="Start Nav2 planning, control, velocity smoothing, and collision monitoring.",
@@ -153,6 +191,7 @@ def generate_launch_description():
             "slam.launch.py",
             use_slam,
         ),
+        saved_map_localization_launch,
         navigation_tf_gate,
         navigation_after_tf,
         Node(
