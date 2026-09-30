@@ -25,5 +25,7 @@ if(BUILD_TESTING)
 endif()
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveRobot.action"
+  "msg/WorkcellStatus.msg"
+  "msg/WorkcellCommand.msg"
 )
 ament_package()
