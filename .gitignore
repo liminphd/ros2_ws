@@ -42,3 +42,17 @@ webrtc_test/
 *.bak
 *.bak_*
 *.backup_*
+
+# AMIGA simulation temporary files
+backups/
+sim_debug/
+/maps/
+src/my_robot_description/urdf/amiga_sim_fixed.sdf
+src/my_robot_description/urdf/amiga_sim_before_*.urdf.xacro
+
+# Generated and temporary experiment output
+*.csv.bak
+*.tmp
+
+# Historical Gazebo world revisions
+src/my_robot_description/worlds/*_before_*.sdf

@@ -1,0 +1,75 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Fixed Frame: map
+    Frame Rate: 15
+    Background Color: 48; 48; 48
+
+  Displays:
+    - Class: rviz_default_plugins/Map
+      Name: Greenhouse Map
+      Enabled: true
+      Topic:
+        Value: /map
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Depth: 5
+      Alpha: 0.8
+      Color Scheme: map
+
+    - Class: rviz_default_plugins/Path
+      Name: Planned Coverage - Blue
+      Enabled: true
+      Topic:
+        Value: /greenhouse/full_coverage_path
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Depth: 5
+      Color: 25; 100; 255
+      Alpha: 1
+      Line Style: Lines
+      Line Width: 0.08
+      Buffer Length: 1
+
+    - Class: rviz_default_plugins/Path
+      Name: Actual Trajectory - Red
+      Enabled: true
+      Topic:
+        Value: /amiga/actual_path
+        Reliability Policy: Reliable
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Depth: 5
+      Color: 255; 40; 40
+      Alpha: 1
+      Line Style: Lines
+      Line Width: 0.12
+      Buffer Length: 1
+
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: false
+
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: TopDownOrtho
+      Target Frame: <Fixed Frame>
+      X: 75
+      Y: 5
+      Scale: 25
+      Angle: 0
+    Saved: []

@@ -642,3 +642,89 @@ perception, localization, and navigation sufficiently separated that
 the higher-level ROS 2 stack can be reused on another agricultural
 robot with limited changes to hardware drivers, parameters, and robot
 description.
+
+## AMIGA Greenhouse Simulation and Coverage Planning
+
+### Overview
+
+A Gazebo-based simulation environment was developed to evaluate
+agricultural robot navigation and greenhouse coverage planning.
+
+The demonstration uses an AMIGA skid-steer robot model in a
+150 m x 10 m greenhouse environment.
+
+### Software Environment
+
+- Ubuntu 24.04
+- ROS 2 Jazzy
+- Gazebo Sim
+- Nav2 with MPPI controller
+- RViz2
+
+### Main Components
+
+- Greenhouse simulation environment and AMIGA robot model
+- Gazebo ground-truth localization and TF publishing
+- Nav2 global path planning and MPPI path following
+- Six-lane greenhouse coverage route generation
+- Static-map footprint collision validation
+- Robot trajectory recording and RViz visualization
+- Gazebo wheel-track visualization
+
+### Coverage Planning Results
+
+- Greenhouse dimensions: 150 m x 10 m
+- Coverage lanes: 6
+- Planned route length: approximately 885.2 m
+- Offline footprint validation: 18,061 sampled poses
+- Static collision samples detected: 0
+
+The route was validated against the working occupancy map using
+the configured robot footprint.
+
+### Simulation Startup
+
+From the ROS 2 workspace:
+
+    source /opt/ros/jazzy/setup.bash
+    source install/setup.bash
+    ros2 launch my_robot_description greenhouse_sim.launch.py
+
+The launch process generates the Gazebo model from the robot
+Xacro description.
+
+### Coverage Route Generation
+
+    python3 src/my_robot_description/scripts/build_safe_coverage_route.py
+
+### RViz Coverage Visualization
+
+    python3 src/my_robot_description/scripts/show_safe_coverage_rviz.py
+
+RViz configuration:
+
+    src/my_robot_description/config/greenhouse_demo.rviz
+
+### Demonstration and Validation Scripts
+
+- `demo_greenhouse_motion.py`: short navigation demonstration
+- `amiga_trajectory_recorder.py`: trajectory recording
+- `amiga_tire_tracks.py`: simulated wheel-track visualization
+- `check_full_coverage.py`: offline collision validation
+- `preflight_full_coverage_nav2.py`: Nav2 segment planning checks
+
+### Validation Scope and Limitations
+
+Representative robot motion and trajectory visualization were
+demonstrated in Gazebo and RViz.
+
+The full 885.2 m coverage route has not been verified through
+continuous dynamic execution.
+
+Gazebo ground-truth localization was used for the simulation
+demonstration. This does not establish real-world localization
+accuracy or real-robot navigation performance.
+
+The current coverage route and simulation are intended as a
+research and engineering demonstration, not a production-ready
+autonomous navigation system.
